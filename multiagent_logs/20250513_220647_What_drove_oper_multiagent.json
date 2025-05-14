@@ -1,0 +1,19 @@
+{
+    "task": "What drove operating margin change as of FY2022 for 3M? If operating margin is not a useful metric for a company like this, then please state that and explain why.",
+    "doc_metadata": {
+        "financebench_id": "financebench_id_01226",
+        "company": "3M",
+        "doc_name": "3M_2022_10K",
+        "question_type": "domain-relevant",
+        "question_reasoning": "Logical reasoning (based on numerical reasoning) OR Numerical reasoning OR Logical reasoning",
+        "domain_question_num": "dg17",
+        "question": "What drove operating margin change as of FY2022 for 3M? If operating margin is not a useful metric for a company like this, then please state that and explain why.",
+        "answer": "Operating Margin for 3M in FY2022 has decreased by 1.7% primarily due to: \n-Decrease in gross Margin\n-mostly one-off charges including Combat Arms Earplugs litigation, impairment related to exiting PFAS manufacturing, costs related to exiting Russia and divestiture-related restructuring\ncharges",
+        "justification": null,
+        "dataset_subset_label": "OPEN_SOURCE"
+    },
+    "final_answer": [
+        "The operating margin change for 3M in FY2022 was primarily driven by an increase in SG&A expenses as a percentage of sales. This increase was due to several factors, including significant litigation costs related to the Combat Arms Earplugs litigation, a pre-tax charge of approximately $1.2 billion, impairment costs associated with exiting PFAS manufacturing, costs related to exiting Russia, and divestiture-related restructuring charges. Additionally, 3M continued to invest in key growth initiatives. These increased costs were partially offset by restructuring benefits and ongoing general cost management efforts by the company. Operating margin is a useful metric for 3M as it reflects the company's ability to manage its operating expenses relative to its sales, which is crucial for understanding its profitability and operational efficiency."
+    ],
+    "system": "simple_multi_agent"
+}

@@ -1,0 +1,19 @@
+{
+    "task": "Assume that you are a public equities analyst. Answer the following question by primarily using information that is shown in the balance sheet: what is the year end FY2018 net PPNE for 3M? Answer in USD billions.",
+    "doc_metadata": {
+        "financebench_id": "financebench_id_04672",
+        "company": "3M",
+        "doc_name": "3M_2018_10K",
+        "question_type": "metrics-generated",
+        "question_reasoning": "Information extraction",
+        "domain_question_num": null,
+        "question": "Assume that you are a public equities analyst. Answer the following question by primarily using information that is shown in the balance sheet: what is the year end FY2018 net PPNE for 3M? Answer in USD billions.",
+        "answer": "$8.70",
+        "justification": "The metric ppne, net was directly extracted from the company 10K. The line item name, as seen in the 10K, was: Property, plant and equipment â net.",
+        "dataset_subset_label": "OPEN_SOURCE"
+    },
+    "final_answer": [
+        "The year-end FY2018 net Property, Plant, and Equipment (PP&E) for 3M is USD 11.622 billion."
+    ],
+    "system": "simple_multi_agent"
+}

@@ -1,0 +1,19 @@
+{
+    "task": "If we exclude the impact of M&A, which segment has dragged down 3M's overall growth in 2022?",
+    "doc_metadata": {
+        "financebench_id": "financebench_id_01865",
+        "company": "3M",
+        "doc_name": "3M_2022_10K",
+        "question_type": "novel-generated",
+        "question_reasoning": null,
+        "domain_question_num": null,
+        "question": "If we exclude the impact of M&A, which segment has dragged down 3M's overall growth in 2022?",
+        "answer": "The consumer segment shrunk by 0.9% organically.",
+        "justification": null,
+        "dataset_subset_label": "OPEN_SOURCE"
+    },
+    "final_answer": [
+        "The Consumer segment has dragged down 3M's overall growth in 2022, with an organic sales decline of 0.9%."
+    ],
+    "system": "simple_multi_agent"
+}

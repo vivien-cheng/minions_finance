@@ -31,13 +31,6 @@ ENV/
 *.swp
 *.swo
 
-# Project specific
-predicted_answers/
-eval_logs/
-minions_logs/
-multiagent_logs/
-*.log
-
 # Environment variables
 .env
 .env.local
