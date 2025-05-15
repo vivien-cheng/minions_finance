@@ -111,18 +111,35 @@ class Minions:
     3. Use proper financial formulas
     4. Handle unit conversions accurately
 
+    STRICT RESPONSE FORMAT:
+    You MUST return a JSON object with exactly these fields:
+    {
+        "calculation": "Brief description of the calculation",
+        "result": "The numerical result (as a string)",
+        "explanation": "Brief explanation of the calculation"
+    }
+
+    VALIDATION RULES:
+    1. The response MUST be valid JSON
+    2. All fields must be strings
+    3. The result must be a string representation of a number
+    4. Keep explanations concise
+    5. Do not include any text outside the JSON object
+    6. Do not include markdown formatting
+    7. Do not include LaTeX formulas
+
+    Example valid response:
+    {
+        "calculation": "Percentage change in FCF Conversion Rate",
+        "result": "8.91",
+        "explanation": "FCF Conversion Rate increased by 8.91% from 2021 to 2022"
+    }
+
     If no calculation is needed, respond with:
     {
         "calculation": "No calculation needed",
-        "result": "The input value",
+        "result": "0",
         "explanation": "No calculation was required for this task"
-    }
-
-    Format your response as a JSON object:
-    {
-        "calculation": "The calculation performed",
-        "result": "The numerical result",
-        "explanation": "Explanation of the calculation"
     }"""
 
     AGGREGATOR_AGENT_PROMPT = """You are an Aggregator Agent. Your role is to synthesize information from previous agent turns and the original question to formulate a final, concise answer.
@@ -178,6 +195,12 @@ class Minions:
                 response = response.split("```json")[1].split("```", 1)[0].strip()
             elif "```" in response:
                 response = response.split("```", 1)[1].split("```", 1)[0].strip()
+            # Remove any LaTeX formulas
+            response = re.sub(r'\\\[.*?\\\]', '', response)
+            response = re.sub(r'\$.*?\$', '', response)
+            # Remove any remaining non-JSON text
+            response = re.sub(r'^[^{]*', '', response)
+            response = re.sub(r'[^}]*$', '', response)
         return response
 
     def run_multi_agent(self, question: str, question_metadata: Dict[str, Any], context: str) -> str:
@@ -256,9 +279,22 @@ class Minions:
                 response_text = self._extract_json_string(agent_response)
                 try:
                     agent_result = json.loads(response_text)
+                    # Validate the response format
+                    required_fields = ["calculation", "result", "explanation"]
+                    if not all(field in agent_result for field in required_fields):
+                        raise ValueError("Missing required fields in calculator response")
+                    if not isinstance(agent_result["result"], str):
+                        agent_result["result"] = str(agent_result["result"])
                     agent_responses.append({"agent": "CalculatorAgent", "result": agent_result})
                 except Exception as e:
                     print(f"[ERROR] Could not parse CalculatorAgent response: {e}\nRaw: {response_text}")
+                    # Provide a fallback response
+                    fallback_result = {
+                        "calculation": "Error in calculation",
+                        "result": "0",
+                        "explanation": f"Failed to parse calculator response: {str(e)}"
+                    }
+                    agent_responses.append({"agent": "CalculatorAgent", "result": fallback_result})
                     return "Error: Could not parse CalculatorAgent response"
                     
             elif selected_agent == "AggregatorAgent":
