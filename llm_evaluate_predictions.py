@@ -54,11 +54,22 @@ for example in dataset:
     
     print(f"\n--- Processing {financebench_id} ---")
     
-    # Evaluate Condition 1 (Baseline)
-    try:
-        response = remote_client.chat(
-            messages=[
-                {"role": "system", "content": """You are an evaluator that determines if a predicted answer matches a gold answer.
+    # Skip if predicted answer is empty, not a string, or an error message (Condition 1)
+    if (not isinstance(predicted_answer_condition1, str) or not predicted_answer_condition1.strip() or predicted_answer_condition1.strip().lower().startswith("error")):
+        print(f"Skipping evaluation for {financebench_id} (Condition 1): Invalid or error answer: {predicted_answer_condition1}")
+        baseline_eval_log.append({
+            "financebench_id": financebench_id,
+            "gold_answer": gold_answer,
+            "predicted_answer": predicted_answer_condition1,
+            "is_correct": False,
+            "explanation": f"Skipped: Invalid or error answer: {predicted_answer_condition1}"
+        })
+    else:
+        # Evaluate Condition 1 (Baseline)
+        try:
+            response = remote_client.chat(
+                messages=[
+                    {"role": "system", "content": """You are an evaluator that determines if a predicted answer matches a gold answer.
                 Consider the following criteria:
                 1. Numerical Accuracy: Allow 10% tolerance margin for numerical answers
                 2. Unit Consistency: Accept answers with or without units, different scales (e.g., million vs billion), and various formats
@@ -78,34 +89,45 @@ for example in dataset:
                     "is_correct": true/false,
                     "explanation": "Brief explanation of your decision"
                 }"""},
-                {"role": "user", "content": f"Gold Answer: {gold_answer}\nPredicted Answer: {predicted_answer_condition1}"}
-            ]
-        )
-        eval_result = json.loads(response)
-        if eval_result["is_correct"]:
-            baseline_correct += 1
-        baseline_eval_log.append({
-            "financebench_id": financebench_id,
-            "gold_answer": gold_answer,
-            "predicted_answer": predicted_answer_condition1,
-            "is_correct": eval_result["is_correct"],
-            "explanation": eval_result["explanation"]
-        })
-    except Exception as e:
-        print(f"Error evaluating {financebench_id}: {str(e)}")
-        baseline_eval_log.append({
-            "financebench_id": financebench_id,
-            "gold_answer": gold_answer,
-            "predicted_answer": predicted_answer_condition1,
-            "is_correct": False,
-            "explanation": f"Error during evaluation: {str(e)}"
-        })
+                    {"role": "user", "content": f"Gold Answer: {gold_answer}\nPredicted Answer: {predicted_answer_condition1}"}
+                ]
+            )
+            eval_result = json.loads(response)
+            if eval_result["is_correct"]:
+                baseline_correct += 1
+            baseline_eval_log.append({
+                "financebench_id": financebench_id,
+                "gold_answer": gold_answer,
+                "predicted_answer": predicted_answer_condition1,
+                "is_correct": eval_result["is_correct"],
+                "explanation": eval_result["explanation"]
+            })
+        except Exception as e:
+            print(f"Error evaluating {financebench_id}: {str(e)}")
+            baseline_eval_log.append({
+                "financebench_id": financebench_id,
+                "gold_answer": gold_answer,
+                "predicted_answer": predicted_answer_condition1,
+                "is_correct": False,
+                "explanation": f"Error during evaluation: {str(e)}"
+            })
     
-    # Evaluate Condition 2 (Minions)
-    try:
-        response = remote_client.chat(
-            messages=[
-                {"role": "system", "content": """You are an evaluator that determines if a predicted answer matches a gold answer.
+    # Skip if predicted answer is empty, not a string, or an error message (Condition 2)
+    if (not isinstance(predicted_answer_condition2, str) or not predicted_answer_condition2.strip() or predicted_answer_condition2.strip().lower().startswith("error")):
+        print(f"Skipping evaluation for {financebench_id} (Condition 2): Invalid or error answer: {predicted_answer_condition2}")
+        minions_eval_log.append({
+            "financebench_id": financebench_id,
+            "gold_answer": gold_answer,
+            "predicted_answer": predicted_answer_condition2,
+            "is_correct": False,
+            "explanation": f"Skipped: Invalid or error answer: {predicted_answer_condition2}"
+        })
+    else:
+        # Evaluate Condition 2 (Minions)
+        try:
+            response = remote_client.chat(
+                messages=[
+                    {"role": "system", "content": """You are an evaluator that determines if a predicted answer matches a gold answer.
                 Consider the following criteria:
                 1. Numerical Accuracy: Allow 10% tolerance margin for numerical answers
                 2. Unit Consistency: Accept answers with or without units, different scales (e.g., million vs billion), and various formats
@@ -125,28 +147,28 @@ for example in dataset:
                     "is_correct": true/false,
                     "explanation": "Brief explanation of your decision"
                 }"""},
-                {"role": "user", "content": f"Gold Answer: {gold_answer}\nPredicted Answer: {predicted_answer_condition2}"}
-            ]
-        )
-        eval_result = json.loads(response)
-        if eval_result["is_correct"]:
-            minions_correct += 1
-        minions_eval_log.append({
-            "financebench_id": financebench_id,
-            "gold_answer": gold_answer,
-            "predicted_answer": predicted_answer_condition2,
-            "is_correct": eval_result["is_correct"],
-            "explanation": eval_result["explanation"]
-        })
-    except Exception as e:
-        print(f"Error evaluating {financebench_id}: {str(e)}")
-        minions_eval_log.append({
-            "financebench_id": financebench_id,
-            "gold_answer": gold_answer,
-            "predicted_answer": predicted_answer_condition2,
-            "is_correct": False,
-            "explanation": f"Error during evaluation: {str(e)}"
-        })
+                    {"role": "user", "content": f"Gold Answer: {gold_answer}\nPredicted Answer: {predicted_answer_condition2}"}
+                ]
+            )
+            eval_result = json.loads(response)
+            if eval_result["is_correct"]:
+                minions_correct += 1
+            minions_eval_log.append({
+                "financebench_id": financebench_id,
+                "gold_answer": gold_answer,
+                "predicted_answer": predicted_answer_condition2,
+                "is_correct": eval_result["is_correct"],
+                "explanation": eval_result["explanation"]
+            })
+        except Exception as e:
+            print(f"Error evaluating {financebench_id}: {str(e)}")
+            minions_eval_log.append({
+                "financebench_id": financebench_id,
+                "gold_answer": gold_answer,
+                "predicted_answer": predicted_answer_condition2,
+                "is_correct": False,
+                "explanation": f"Error during evaluation: {str(e)}"
+            })
 
 print(f"\nBaseline accuracy: {baseline_correct}/{total} ({baseline_correct/total*100:.1f}%)")
 print(f"Minions accuracy: {minions_correct}/{total} ({minions_correct/total*100:.1f}%)")

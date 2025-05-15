@@ -220,7 +220,6 @@ class Minions:
             
             # Orchestrator step
             orchestrator_response = self.remote_client.chat(
-                model="gpt-4-turbo-preview",
                 messages=[
                     {"role": "system", "content": self.ORCHESTRATOR_PROMPT},
                     {"role": "user", "content": f"User's question: {question}\n\nMetadata: {json.dumps(question_metadata)}\n\nPrevious responses: {json.dumps(agent_responses)}"}
@@ -229,6 +228,9 @@ class Minions:
             
             # Extract and parse orchestrator response
             response_text = self._extract_json_string(orchestrator_response)
+            if not response_text.strip():
+                print("Empty response from orchestrator!")
+                return "Error: Empty response from orchestrator"
             try:
                 orchestrator_decision = json.loads(response_text)
             except Exception as e:
@@ -242,13 +244,15 @@ class Minions:
             # Agent step
             if selected_agent == "RetrieverAgent":
                 agent_response = self.remote_client.chat(
-                    model="gpt-4-turbo-preview",
                     messages=[
                         {"role": "system", "content": self.RETRIEVER_AGENT_PROMPT},
                         {"role": "user", "content": f"Context:\n{current_context}\n\nSubtask:\n{subtask}"}
                     ]
                 )
                 response_text = self._extract_json_string(agent_response)
+                if not response_text.strip():
+                    print("Empty response from RetrieverAgent!")
+                    return "Error: Empty response from RetrieverAgent"
                 try:
                     agent_result = json.loads(response_text)
                     current_context = agent_result.get("relevant_text", "")
@@ -259,13 +263,15 @@ class Minions:
                     
             elif selected_agent == "SimpleFinanceAgent":
                 agent_response = self.remote_client.chat(
-                    model="gpt-4-turbo-preview",
                     messages=[
                         {"role": "system", "content": self.SIMPLE_FINANCE_AGENT_PROMPT},
                         {"role": "user", "content": f"Context:\n{current_context}\n\nSubtask:\n{subtask}"}
                     ]
                 )
                 response_text = self._extract_json_string(agent_response)
+                if not response_text.strip():
+                    print("Empty response from SimpleFinanceAgent!")
+                    return "Error: Empty response from SimpleFinanceAgent"
                 try:
                     agent_result = json.loads(response_text)
                     agent_responses.append({"agent": "SimpleFinanceAgent", "result": agent_result})
@@ -275,13 +281,15 @@ class Minions:
                     
             elif selected_agent == "CalculatorAgent":
                 agent_response = self.remote_client.chat(
-                    model="gpt-4-turbo-preview",
                     messages=[
                         {"role": "system", "content": self.CALCULATOR_AGENT_PROMPT},
                         {"role": "user", "content": f"Context:\n{current_context}\n\nSubtask:\n{subtask}"}
                     ]
                 )
                 response_text = self._extract_json_string(agent_response)
+                if not response_text.strip():
+                    print("Empty response from CalculatorAgent!")
+                    return "Error: Empty response from CalculatorAgent"
                 try:
                     agent_result = json.loads(response_text)
                     # Validate the response format
@@ -304,13 +312,15 @@ class Minions:
                     
             elif selected_agent == "AggregatorAgent":
                 agent_response = self.remote_client.chat(
-                    model="gpt-4-turbo-preview",
                     messages=[
                         {"role": "system", "content": self.AGGREGATOR_AGENT_PROMPT},
                         {"role": "user", "content": f"Original Question: {question}\n\nPrevious Responses: {json.dumps(agent_responses)}\n\nSubtask: {subtask}"}
                     ]
                 )
                 response_text = self._extract_json_string(agent_response)
+                if not response_text.strip():
+                    print("Empty response from AggregatorAgent!")
+                    return "Error: Empty response from AggregatorAgent"
                 try:
                     agent_result = json.loads(response_text)
                     final_answer = agent_result.get("final_answer", "Error: No final answer provided")
