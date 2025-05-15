@@ -2,17 +2,15 @@ import json
 import os
 from openai import OpenAI
 
-# Replace with your actual OpenAI API key
 OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 if not OPENAI_API_KEY:
     raise ValueError("Please set the OPENAI_API_KEY environment variable.")
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 model_name = "gpt-4o"
-num_examples = 50
+num_examples = 40
 predicted_answers_condition1 = {}
 
-# Load the first few examples from the dataset
 dataset = []
 with open("data/financebench_open_source.jsonl", "r") as f:
     for i, line in enumerate(f):
@@ -29,13 +27,24 @@ for example in dataset:
     evidence_texts = [item["evidence_text"] for item in example["evidence"]]
     context = "\n".join(evidence_texts)
 
-    prompt = f"""Based on the following information, answer the question:
+    prompt = f"""Based on the following information, answer the question concisely and exactly as asked:
 
     Context:
     {context}
 
     Question:
     {question}
+
+    Guidelines:
+    - Provide a direct, concise answer that exactly matches the question format
+    - For dollar values: Add $ symbol and round to 2 decimal places (e.g., $81.00)
+    - For numerical values, just state the number
+    - For yes/no questions, provide a brief explanation of your reasoning
+    - Always include the correct unit or scale (e.g., million, billion, %, $) as appropriate
+    - Pay attention to the magnitude and format (e.g., $2.22 million, $1.00 billion, 2.22%)
+    - If the question specifies "answer in USD million/billion", do not include million/billion in your answer as it's already in the question
+    - Avoid unnecessary explanations unless specifically asked for
+    - Pay close attention to the exact format of the question and match it in your answer
 
     Answer:"""
 

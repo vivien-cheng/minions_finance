@@ -1,19 +1,21 @@
-# Minions Finance
+# FinanceBench Experiment
 
-A multi-agent system for financial document analysis and question answering, built using OpenAI's GPT models.
+A multi-agent system for financial question answering, built to evaluate and improve financial analysis capabilities.
 
 ## Overview
 
-This project implements two approaches for answering financial questions:
-1. Baseline: A single GPT model approach
-2. Minions: A multi-agent system with specialized agents for different tasks
+This project implements a multi-agent system for answering financial questions using specialized agents:
+- RetrieverAgent: Finds relevant text snippets from financial documents
+- SimpleFinanceAgent: Understands basic financial terms and identifies relevant line items
+- CalculatorAgent: Performs arithmetic calculations on financial data
+- AggregatorAgent: Synthesizes information to provide final answers
 
 ## Setup
 
 1. Clone the repository:
 ```bash
-git clone git@github.com:vivien-cheng/minions_finance.git
-cd minions_finance
+git clone [your-repo-url]
+cd financebench-experiment
 ```
 
 2. Install dependencies:
@@ -21,47 +23,52 @@ cd minions_finance
 pip install -r requirements.txt
 ```
 
-3. Set up your OpenAI API key:
+3. Set up environment variables:
 ```bash
-export OPENAI_API_KEY='your-api-key-here'
+export OPENAI_API_KEY="your-api-key"
 ```
 
 ## Usage
 
-### Running the Baseline Model
-```bash
-python baseline.py
-```
+The project includes three main scripts:
 
-### Running the Minions Multi-Agent System
-```bash
-python minions.py
-```
+1. `baseline.py`: Runs the baseline model for comparison
+2. `minions.py`: Runs the multi-agent system
+3. `llm_evaluate_predictions.py`: Evaluates the predictions from both approaches
 
-### Evaluating Results
+To run the full evaluation pipeline:
 ```bash
-python evaluate_predictions.py
+python baseline.py && python minions.py && python llm_evaluate_predictions.py
 ```
 
 ## Project Structure
 
-- `baseline.py`: Implementation of the single-model approach
-- `minions.py`: Implementation of the multi-agent system
-- `evaluate_predictions.py`: Script for evaluating model predictions
-- `minions_finance/`: Core package containing:
-  - `clients/`: API client implementations
-  - `prompts/`: System and task prompts
-  - `tools/`: Utility functions and tools
-  - `utils/`: Helper functions and utilities
+```
+financebench-experiment/
+├── data/
+│   └── financebench_open_source.jsonl
+├── minions_finance/
+│   ├── clients/
+│   ├── prompts/
+│   ├── tools/
+│   └── utils/
+├── predicted_answers/
+├── eval_logs/
+├── baseline.py
+├── minions.py
+└── llm_evaluate_predictions.py
+```
 
-## Output
+## Evaluation
 
-Results are saved in the following directories:
-- `predicted_answers/`: Contains model predictions
-- `eval_logs/`: Contains evaluation results
-- `minions_logs/`: Contains detailed logs from the multi-agent system
-- `multiagent_logs/`: Contains logs from agent interactions
+The system evaluates answers based on:
+- Semantic equivalence
+- Numerical accuracy
+- Format consistency
+- Reasoning quality
+
+Results are saved in the `eval_logs` directory with timestamps.
 
 ## License
 
-MIT License
+[Your chosen license]

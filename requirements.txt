@@ -3,7 +3,7 @@ ollama                    # local LLM runtime
 streamlit==1.42.2         # Streamlit UI (pinned)
 
 # --- Model provider SDKs ---
-openai                    # OpenAI client
+openai>=1.0.0
 anthropic                 # Anthropic client
 together                  # Together AI client
 groq                      # Groq client
@@ -28,4 +28,10 @@ pyjwt                     # JWT utilities
 
 # --- Backend / server ---
 flask                     # worker server
-twilio                    # SMS / WhatsApp integration 
+twilio                    # SMS / WhatsApp integration
+
+pydantic>=2.0.0
+python-dotenv>=0.19.0
+numpy>=1.21.0
+pandas>=1.3.0
+tqdm>=4.62.0 

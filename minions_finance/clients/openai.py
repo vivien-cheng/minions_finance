@@ -6,8 +6,6 @@ from openai import OpenAI
 
 from minions_finance.usage import Usage
 
-
-# TODO: define one dataclass for what is returned from all the clients
 class OpenAIClient:
     def __init__(
         self,
@@ -125,7 +123,6 @@ class OpenAIClient:
                     **kwargs,
                 }
 
-                # Only add temperature if NOT using the reasoning models (e.g., o3-mini model)
                 if "o1" not in self.model_name and "o3" not in self.model_name:
                     params["temperature"] = self.temperature
                 if "o1" in self.model_name or "o3" in self.model_name:
@@ -138,13 +135,11 @@ class OpenAIClient:
                 self.logger.error(f"Error during OpenAI API call: {e}")
                 raise
 
-            # Extract usage information
             usage = Usage(
                 prompt_tokens=response.usage.prompt_tokens,
                 completion_tokens=response.usage.completion_tokens,
             )
 
-            # The content is now nested under message
             return [choice.message.content for choice in response.choices], usage
 
     def get_embedding(self, text: str, model: str = "text-embedding-ada-002") -> List[float]:
