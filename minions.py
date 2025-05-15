@@ -6,6 +6,7 @@ import time
 from datetime import datetime
 from pydantic import BaseModel, field_validator, Field
 from inspect import getsource
+import sys
 
 from minions_finance.utils.chunking import chunk_by_section
 from minions_finance.prompts.minions import WORKER_PROMPT_SHORT, REMOTE_ANSWER
@@ -14,6 +15,10 @@ from minions_finance.tools.finance_utils import extract_monetary_values, check_f
 from minions_finance.tools.retriever_tool import retrieve_relevant_context
 from minions_finance.utils.retrievers import bm25_retrieve_top_k_chunks
 from minions_finance.tools.simple_calculator import calculate
+
+# Configure UTF-8 encoding
+sys.stdout.reconfigure(encoding='utf-8')
+sys.stderr.reconfigure(encoding='utf-8')
 
 class JobManifest(BaseModel):
     chunk: str
