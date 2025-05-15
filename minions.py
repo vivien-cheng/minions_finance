@@ -358,7 +358,7 @@ if __name__ == "__main__":
         raise ValueError("Please set the OPENAI_API_KEY environment variable.")
 
     remote_client = OpenAIClient(api_key=OPENAI_API_KEY, model_name="gpt-4o")
-    minions_instance = Minions(remote_client=remote_client, log_dir="multiagent_logs")
+    minions_instance = Minions(remote_client=remote_client, log_dir="multiagent_logs", max_rounds=15)
     num_examples = 50
     
     # Load the first few examples from the dataset

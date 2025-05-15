@@ -54,8 +54,8 @@ financebench-experiment/
 │   └── utils/
 ├── predicted_answers/
 ├── eval_logs/
-├── baseline.py
-├── minions.py
+├── baseline.py    # condition 1 ("vanilla version")
+├── minions.py     # condition 2 (multi-agent)
 └── llm_evaluate_predictions.py
 ```
 
@@ -69,6 +69,12 @@ The system evaluates answers based on:
 
 Results are saved in the `eval_logs` directory with timestamps.
 
-## License
+### Error Handling in Evaluation
 
-[Your chosen license]
+The evaluation script (`llm_evaluate_predictions.py`) now includes robust error handling:
+- **Invalid or error answers** (such as empty strings, non-string values, or answers starting with `Error`) are automatically skipped and logged as not evaluated.
+- This prevents crashes due to JSON parsing errors and ensures only valid predictions are sent to the evaluator.
+- Skipped cases are recorded in the evaluation logs with an explanation.
+- **As of the latest update, this robust error handling applies to both Baseline and Minions conditions.**
+
+### Troubleshooting
