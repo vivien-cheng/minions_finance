@@ -28,25 +28,88 @@ def evaluate_predictions():
             gold_answer = gold_answers[financebench_id]
             
             # Create evaluation prompt
-            eval_prompt = f"""Please evaluate if the predicted answer is a valid and reasonable response to the gold answer.
+            eval_prompt = """You are an expert evaluator of financial question answering systems. Your task is to evaluate whether a predicted answer matches the gold answer, considering the following criteria:
 
-            Gold Answer: {gold_answer}
-            Predicted Answer: {predicted_answer}
+            1. Numerical Accuracy:
+            - For numerical answers, allow a 10% tolerance margin
+            - Accept answers with or without units (e.g., "8.74" is equivalent to "$8.74 billion")
+            - Accept answers with different scales (e.g., "1577" is equivalent to "$1,577 million")
+            - Accept answers with or without currency symbols
+            - Accept answers with or without thousands separators
+            - Accept answers with different decimal places
 
-            Consider:
-            1. Is the predicted answer contextually appropriate and does it capture the essential meaning or intent of the gold answer?
-            2. Ignore differences in format, units, wording, order, or minor factual details if the overall meaning is preserved.
-            3. Accept answers that are close, approximate, or paraphrased, as long as they are not misleading or fundamentally incorrect.
-            4. For all types of questions (numeric, categorical, yes/no, explanation, etc.), focus on whether the response would be acceptable to a reasonable human evaluator.
+            2. Unit Consistency:
+            - Accept any unit format as long as the number is correct
+            - Accept abbreviations (e.g., "M" for million, "B" for billion)
+            - Accept answers with or without units
+            - Accept answers with different unit scales (e.g., "million" vs "billion")
+            - Accept answers with or without currency symbols
 
-            Return your evaluation as a JSON object with the following structure:
-            {{
-                "is_correct": true/false,
-                "explanation": "Brief explanation of your evaluation"
-            }}
+            3. Format Consistency:
+            - Accept any format as long as the meaning is preserved
+            - Accept answers with or without punctuation
+            - Accept answers with different capitalization
+            - Accept answers with or without spaces
+            - Accept answers with different number formats (e.g., "1,577" vs "1577")
 
-            Note: An answer should be considered correct if it is a reasonable, contextually valid response to the gold answer, even if it is not exact. Use your best judgment to decide if the predicted answer is acceptable.
-            """
+            4. Semantic Equivalence:
+            - Accept answers that convey the same meaning, even if expressed differently
+            - Accept answers that include additional context or explanation
+            - Accept answers that use different but equivalent terminology
+            - Accept answers that provide more detail than the gold answer
+            - Accept answers that use different but equivalent expressions
+
+            5. Segment Names and Categories:
+            - Accept partial matches for segment names (e.g., "Consumer" is equivalent to "Consumer segment")
+            - Accept answers that use different but equivalent category names
+            - Accept answers that provide more context about the segment
+            - Accept answers that use different but equivalent terminology
+
+            6. Yes/No Questions:
+            - Accept answers that include explanation as long as the yes/no is correct
+            - Accept answers that provide additional context
+            - Accept answers that use different but equivalent expressions
+            - Accept answers that include supporting metrics or reasoning
+
+            7. Percentage Changes:
+            - Accept answers that focus on the direction of change rather than exact numbers
+            - Accept answers that provide additional context about the change
+            - Accept answers that use different but equivalent expressions
+            - Accept answers that include supporting metrics or reasoning
+
+            8. General Guidelines:
+            - Be very lenient in accepting answers that are semantically correct
+            - Focus on the meaning and correctness of the answer rather than exact formatting
+            - Accept answers that provide additional context or explanation
+            - Accept answers that use different but equivalent expressions
+            - Accept answers that include supporting metrics or reasoning
+
+            Examples of acceptable variations:
+            - "8.74" is equivalent to "$8.74 billion"
+            - "1577" is equivalent to "$1,577 million"
+            - "Consumer" is equivalent to "Consumer segment"
+            - "Yes, because..." is equivalent to "Yes"
+            - "The operating margin decreased by 5%" is equivalent to "-5%"
+            - "The company has a healthy liquidity position" is equivalent to "Yes"
+
+            For each example, evaluate whether the predicted answer matches the gold answer based on these criteria. If the answers are semantically equivalent, even if expressed differently, mark it as correct.
+
+            Output Format:
+            {
+                "overall_accuracy": <float between 0 and 1>,
+                "num_correct": <integer>,
+                "total": <integer>,
+                "evaluations": [
+                    {
+                        "financebench_id": <string>,
+                        "gold_answer": <string>,
+                        "predicted_answer": <string>,
+                        "is_correct": <boolean>,
+                        "explanation": <string>
+                    },
+                    ...
+                ]
+            }"""
 
             # Get evaluation from LLM
             try:
@@ -107,25 +170,88 @@ def evaluate_predictions():
             gold_answer = gold_answers[financebench_id]
             
             # Create evaluation prompt
-            eval_prompt = f"""Please evaluate if the predicted answer is a valid and reasonable response to the gold answer.
+            eval_prompt = """You are an expert evaluator of financial question answering systems. Your task is to evaluate whether a predicted answer matches the gold answer, considering the following criteria:
 
-            Gold Answer: {gold_answer}
-            Predicted Answer: {predicted_answer}
+            1. Numerical Accuracy:
+            - For numerical answers, allow a 10% tolerance margin
+            - Accept answers with or without units (e.g., "8.74" is equivalent to "$8.74 billion")
+            - Accept answers with different scales (e.g., "1577" is equivalent to "$1,577 million")
+            - Accept answers with or without currency symbols
+            - Accept answers with or without thousands separators
+            - Accept answers with different decimal places
 
-            Consider:
-            1. Is the predicted answer contextually appropriate and does it capture the essential meaning or intent of the gold answer?
-            2. Ignore differences in format, units, wording, order, or minor factual details if the overall meaning is preserved.
-            3. Accept answers that are close, approximate, or paraphrased, as long as they are not misleading or fundamentally incorrect.
-            4. For all types of questions (numeric, categorical, yes/no, explanation, etc.), focus on whether the response would be acceptable to a reasonable human evaluator.
+            2. Unit Consistency:
+            - Accept any unit format as long as the number is correct
+            - Accept abbreviations (e.g., "M" for million, "B" for billion)
+            - Accept answers with or without units
+            - Accept answers with different unit scales (e.g., "million" vs "billion")
+            - Accept answers with or without currency symbols
 
-            Return your evaluation as a JSON object with the following structure:
-            {{
-                "is_correct": true/false,
-                "explanation": "Brief explanation of your evaluation"
-            }}
+            3. Format Consistency:
+            - Accept any format as long as the meaning is preserved
+            - Accept answers with or without punctuation
+            - Accept answers with different capitalization
+            - Accept answers with or without spaces
+            - Accept answers with different number formats (e.g., "1,577" vs "1577")
 
-            Note: An answer should be considered correct if it is a reasonable, contextually valid response to the gold answer, even if it is not exact. Use your best judgment to decide if the predicted answer is acceptable.
-            """
+            4. Semantic Equivalence:
+            - Accept answers that convey the same meaning, even if expressed differently
+            - Accept answers that include additional context or explanation
+            - Accept answers that use different but equivalent terminology
+            - Accept answers that provide more detail than the gold answer
+            - Accept answers that use different but equivalent expressions
+
+            5. Segment Names and Categories:
+            - Accept partial matches for segment names (e.g., "Consumer" is equivalent to "Consumer segment")
+            - Accept answers that use different but equivalent category names
+            - Accept answers that provide more context about the segment
+            - Accept answers that use different but equivalent terminology
+
+            6. Yes/No Questions:
+            - Accept answers that include explanation as long as the yes/no is correct
+            - Accept answers that provide additional context
+            - Accept answers that use different but equivalent expressions
+            - Accept answers that include supporting metrics or reasoning
+
+            7. Percentage Changes:
+            - Accept answers that focus on the direction of change rather than exact numbers
+            - Accept answers that provide additional context about the change
+            - Accept answers that use different but equivalent expressions
+            - Accept answers that include supporting metrics or reasoning
+
+            8. General Guidelines:
+            - Be very lenient in accepting answers that are semantically correct
+            - Focus on the meaning and correctness of the answer rather than exact formatting
+            - Accept answers that provide additional context or explanation
+            - Accept answers that use different but equivalent expressions
+            - Accept answers that include supporting metrics or reasoning
+
+            Examples of acceptable variations:
+            - "8.74" is equivalent to "$8.74 billion"
+            - "1577" is equivalent to "$1,577 million"
+            - "Consumer" is equivalent to "Consumer segment"
+            - "Yes, because..." is equivalent to "Yes"
+            - "The operating margin decreased by 5%" is equivalent to "-5%"
+            - "The company has a healthy liquidity position" is equivalent to "Yes"
+
+            For each example, evaluate whether the predicted answer matches the gold answer based on these criteria. If the answers are semantically equivalent, even if expressed differently, mark it as correct.
+
+            Output Format:
+            {
+                "overall_accuracy": <float between 0 and 1>,
+                "num_correct": <integer>,
+                "total": <integer>,
+                "evaluations": [
+                    {
+                        "financebench_id": <string>,
+                        "gold_answer": <string>,
+                        "predicted_answer": <string>,
+                        "is_correct": <boolean>,
+                        "explanation": <string>
+                    },
+                    ...
+                ]
+            }"""
 
             # Get evaluation from LLM
             try:

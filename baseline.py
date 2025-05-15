@@ -8,7 +8,7 @@ if not OPENAI_API_KEY:
 
 client = OpenAI(api_key=OPENAI_API_KEY)
 model_name = "gpt-4o"
-num_examples = 40
+num_examples = 50
 predicted_answers_condition1 = {}
 
 dataset = []
