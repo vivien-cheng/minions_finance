@@ -348,7 +348,7 @@ if __name__ == "__main__":
     
     # Load the first few examples from the dataset
     dataset = []
-    with open("data/financebench_open_source.jsonl", "r") as f:
+    with open("data/financebench_open_source.jsonl", "r", encoding="utf-8") as f:
         for i, line in enumerate(f):
             if i < num_examples:
                 dataset.append(json.loads(line))
@@ -365,9 +365,13 @@ if __name__ == "__main__":
         metadata = {k: example[k] for k in example if k not in ["evidence"]}
 
         print(f"\n--- Processing {financebench_id} ---")
-        result = minions_instance.run(task=question, doc_metadata=metadata, context=context)
-        predicted_answers_condition2[financebench_id] = result
-        print(f"Predicted answer (Condition 2) for {financebench_id}: {result}")
+        try:
+            result = minions_instance.run(task=question, doc_metadata=metadata, context=context)
+            predicted_answers_condition2[financebench_id] = result
+            print(f"Predicted answer (Condition 2) for {financebench_id}: {result}")
+        except Exception as e:
+            print(f"Error processing {financebench_id}: {str(e)}")
+            predicted_answers_condition2[financebench_id] = f"Error: {str(e)}"
 
     # Save the predicted answers for Condition 2
     with open("predicted_answers/predicted_answers_condition2.json", "w", encoding="utf-8") as f:

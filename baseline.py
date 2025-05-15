@@ -12,7 +12,7 @@ num_examples = 50
 predicted_answers_condition1 = {}
 
 dataset = []
-with open("data/financebench_open_source.jsonl", "r") as f:
+with open("data/financebench_open_source.jsonl", "r", encoding="utf-8") as f:
     for i, line in enumerate(f):
         if i < num_examples:
             dataset.append(json.loads(line))
