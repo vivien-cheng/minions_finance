@@ -3,13 +3,19 @@ from typing import Any, Dict, List, Optional, Tuple
 import os
 import openai
 from openai import OpenAI
+import json
+import sys
 
 from minions_finance.usage import Usage
+
+# Configure UTF-8 encoding
+sys.stdout.reconfigure(encoding='utf-8')
+sys.stderr.reconfigure(encoding='utf-8')
 
 class OpenAIClient:
     def __init__(
         self,
-        model_name: str = "gpt-4o",
+        model_name: str = "gpt-4-turbo-preview",
         api_key: Optional[str] = None,
         temperature: float = 0.0,
         max_tokens: int = 4096,
@@ -22,23 +28,23 @@ class OpenAIClient:
         Initialize the OpenAI client.
 
         Args:
-            model_name: The name of the model to use (default: "gpt-4o")
+            model_name: The name of the model to use (default: "gpt-4-turbo-preview")
             api_key: OpenAI API key (optional, falls back to environment variable if not provided)
             temperature: Sampling temperature (default: 0.0)
             max_tokens: Maximum number of tokens to generate (default: 4096)
             base_url: Base URL for the OpenAI API (optional, falls back to OPENAI_BASE_URL environment variable or default URL)
         """
         self.model_name = model_name
-        self.api_key = (api_key or os.getenv("OPENAI_API_KEY")).encode('utf-8', errors='ignore').decode('utf-8') if (api_key or os.getenv("OPENAI_API_KEY")) else None
+        self.api_key = api_key or os.environ.get("OPENAI_API_KEY")
+        if not self.api_key:
+            raise ValueError("OpenAI API key not found. Please set OPENAI_API_KEY environment variable.")
         self.logger = logging.getLogger("OpenAIClient")
         self.logger.setLevel(logging.INFO)
         self.temperature = temperature
         self.max_tokens = max_tokens
-        self.base_url = (base_url or os.getenv(
-            "OPENAI_BASE_URL", "https://api.openai.com/v1"
-        )).encode('utf-8', errors='ignore').decode('utf-8')
+        self.base_url = base_url or os.getenv("OPENAI_BASE_URL", "https://api.openai.com/v1")
         # Initialize the client
-        self.client = OpenAI(api_key=self.api_key, base_url=self.base_url)
+        self.client = openai.OpenAI(api_key=self.api_key)
         if "o1-pro" in self.model_name:
             self.use_responses_api = True
         else:
@@ -99,11 +105,43 @@ class OpenAIClient:
 
         return outputs, usage
 
-    def chat(self, messages: List[Dict[str, Any]], **kwargs) -> Tuple[List[str], Usage]:
-        """
-        Handle chat completions using the OpenAI API.
+    def chat(self, messages: List[Dict[str, str]], **kwargs) -> str:
+        """Send a chat message to OpenAI API with proper UTF-8 encoding."""
+        try:
+            # Ensure all message content is properly encoded
+            encoded_messages = []
+            for msg in messages:
+                if isinstance(msg.get("content"), str):
+                    # Convert to UTF-8 if needed
+                    content = msg["content"].encode("utf-8").decode("utf-8")
+                    encoded_messages.append({
+                        "role": msg["role"],
+                        "content": content
+                    })
+                else:
+                    encoded_messages.append(msg)
 
+            response = self.client.chat.completions.create(
+                model=self.model_name,
+                messages=encoded_messages,
+                **kwargs
+            )
+            
+            # Extract and decode the response content
+            if response.choices and len(response.choices) > 0:
+                content = response.choices[0].message.content
+                return content.encode("utf-8").decode("utf-8")
+            return ""
+            
+        except Exception as e:
+            print(f"Error in OpenAI API call: {str(e)}")
+            raise
+
+    def get_embedding(self, text: str, model: str = "text-embedding-ada-002") -> List[float]:
+        """Get embeddings for a text using OpenAI's embedding model.
+        
         Args:
+            text: The text to get embeddings for
             messages: List of message dictionaries with 'role' and 'content' keys
             **kwargs: Additional arguments to pass to openai.chat.completions.create
 
@@ -118,7 +156,7 @@ class OpenAIClient:
             try:
                 params = {
                     "model": self.model_name,
-                    "messages": [{"role": msg["role"], "content": msg["content"].encode('utf-8', errors='ignore').decode('utf-8') if isinstance(msg["content"], str) else msg["content"]} for msg in messages],
+                    "messages": [{"role": msg["role"], "content": msg["content"]} for msg in messages],
                     "max_completion_tokens": self.max_tokens,
                     **kwargs,
                 }
